@@ -1,25 +1,13 @@
 import styled from 'styled-components';
 import { colorPalette } from '../../utils/constants/styles';
 
-export const AppName = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background-color: ${colorPalette.primary2Color};
-`;
-
 export const Container = styled.div`
   overflow: hidden;
-  position: fixed;
-  top: 80px;
-  left: 0;
-  bottom: 0;
-  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  min-height: 100%;
   background-color: ${colorPalette.primary1Color};
 `;
 
