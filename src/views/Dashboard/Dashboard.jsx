@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import connect from 'react-redux/lib/connect/connect';
 import bindActionCreators from 'redux/lib/bindActionCreators';
 import io from 'socket.io-client';
+import Idea from './Idea/Idea';
+import NewIdea from './NewIdea/Idea';
 import { createBoard } from '../../actions/board';
-import { Wrapper, Ideas, Idea, Panel, Middle, Header, Time, Button, End } from './Dashboard_styles';
+import { Wrapper, Ideas, Panel, Middle, Header, Time, Button, End } from './Dashboard_styles';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -40,19 +42,8 @@ class Dashboard extends Component {
           <End>Zakończ</End>
         </Panel>
         <Ideas>
-          <Idea>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc et libero orci. Sed sit amet imperdiet orci. Donec ornare, felis eu sodales finibus, massa libero hendrerit cras amet.</Idea>
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
-          <Idea />
+          <NewIdea socket={this.socket} room={this.boardName} />
+          <Idea text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc et libero orci. Sed sit amet imperdiet orci. Donec ornare, felis eu sodales finibus, massa libero hendrerit cras amet." />
         </Ideas>
       </Wrapper>
     );
