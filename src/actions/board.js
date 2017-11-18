@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { CREATE_BOARD } from './types';
 
-export function createBoard(name, callback) {
+export function createBoard(name, successCallback, errorCallback) {
   const url = `${__ROOT_URL__}createchannel`;
   const request = axios.post(url, { name, time: 300 });
 
@@ -11,7 +11,7 @@ export function createBoard(name, callback) {
         type: CREATE_BOARD,
         payload: name,
       });
-      callback();
-    });
+      successCallback();
+    }, errorCallback);
   };
 }
