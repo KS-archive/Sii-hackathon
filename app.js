@@ -45,21 +45,34 @@ class Application{
               res.status(400).json({success: false, message: "Błąd tworzenia kanału."})
             }
           }else{
-            res.redirect('/'+req.body.name);
+            //res.redirect('/'+req.body.name);
+            res.status(400).json({success: true})
           }
         });
+      }else{
+        req.status(400).json({success: false, message: "Błędne parametry."})
       }
     });
 
     app.get('/:name', (req,res)=>{
-      let name = req.params.name;
       res.sendFile(`${__dirname}/build/index.html`);
-
     });
   };
+
   sockets(){
     const http = require('http').Server(this.app);
     this.io = require('socket.io')(http);
+
+    this.io.on('connection', function(socket) {
+      console.log('A user connected');
+
+      require('./sockets/loadRoom')(socket, this.io);
+
+
+      socket.on('disconnect', function () {
+        console.log('A user disconnected');
+      });
+    });
 
     http.listen(3000, function() {
       console.log('listening on *:3000');
