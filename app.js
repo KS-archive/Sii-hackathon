@@ -60,13 +60,13 @@ class Application{
   };
 
   sockets(){
+    let io = this.io;
     const http = require('http').Server(this.app);
-    this.io = require('socket.io')(http);
+    io = require('socket.io')(http);
 
-    this.io.on('connection', function(socket) {
+    io.on('connection', function(socket) {
       console.log('A user connected');
-
-      require('./sockets/loadRoom')(socket, this.io);
+      require('./sockets/loadRoom')(socket, io);
 
 
       socket.on('disconnect', function () {

@@ -6,11 +6,11 @@ import { createBoard } from '../../actions/board';
 import { Container, AppName, Middle, Header, Subheader, Input, Button } from './Dashboard_styles';
 
 class Dashboard extends Component {
-  this.boardName = this.props.match.params.boardName;
-  this.socket = io(__ROOT_URL__);
-
   constructor(props) {
     super(props);
+    this.boardName = this.props.match.params.boardName;
+    this.socket = io(__ROOT_URL__);
+
     this.state = {
       name: '',
       time: '',

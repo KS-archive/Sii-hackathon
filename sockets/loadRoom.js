@@ -3,6 +3,7 @@ const Channel = mongoose.model('Channel');
 
 module.exports  = (socket, io) => {
   socket.on('loadRoom', function (data) {
+    console.log(io);
     if(data === "") io.emit('connection_response', 'Brak nazwy.');
     else{
       Channel.findOne({name: data}, function (err, result) {
@@ -12,7 +13,7 @@ module.exports  = (socket, io) => {
         if(!result) io.emit('connection_response', 'Kanał nie istnieje.');
         else {
           //io.emit('connection_response', 'Połączono z kanałem.');
-          socket.join(data, (err) => {
+          socket.join(data, function(err) {
             if(err) io.emit('connection_response', 'Błąd łączenia z kanałem.');
             else  io.emit('connection_response', 'Połączono z kanałem.');
           });
@@ -20,4 +21,4 @@ module.exports  = (socket, io) => {
       });
     }
 });
-}
+};
