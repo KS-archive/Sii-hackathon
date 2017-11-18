@@ -10,6 +10,8 @@ class Application{
   };
 
   init(){
+    require('./data/db');
+
     this.middleware();
     this.routes();
     this.sockets();
