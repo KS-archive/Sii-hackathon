@@ -75,7 +75,10 @@ class Ideas{
       });
     }
   };
-  change(data){};
+
+  change(data){
+
+  };
   _emitIdeas(io, name, ideas){
     io.to(name).emit(ideas);
   };
