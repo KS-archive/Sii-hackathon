@@ -14,8 +14,10 @@ class Home extends Component {
 
   createRoom = (e) => {
     e.preventDefault();
-    console.log(this.state.roomName);
-    this.props.createBoard(this.state.roomName);
+    const { roomName } = this.state;
+    this.props.createBoard(roomName, () => {
+      this.props.history.push(`/${roomName}`);
+    });
   }
 
   render() {

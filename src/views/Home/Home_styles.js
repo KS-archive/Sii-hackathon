@@ -20,7 +20,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #000;
+  background-color: ${colorPalette.primary1Color};
 `;
 
 export const Middle = styled.div`
