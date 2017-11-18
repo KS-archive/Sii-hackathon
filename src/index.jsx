@@ -36,6 +36,9 @@ import './scss/global.scss';
 // Color palette import.
 import { colorPalette } from './utils/constants/styles';
 
+
+// SW
+navigator.serviceWorker.register('/sw.js');
 // Middleware
 /* eslint-disable no-underscore-dangle */
 const createStoreWithMiddleware = applyMiddleware(ReduxThunk)(createStore);
@@ -44,6 +47,8 @@ const store = createStoreWithMiddleware(
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 );
 /* eslint-enable */
+
+
 
 // Needed for onTouchTap (Material UI)
 injectTapEventPlugin();

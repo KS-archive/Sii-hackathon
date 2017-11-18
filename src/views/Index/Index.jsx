@@ -4,6 +4,7 @@ import NotificationSystem from 'react-notification-system';
 import connect from 'react-redux/lib/connect/connect';
 import { AppName, Container, Body } from './Index_styles';
 
+
 @withRouter
 class Index extends Component {
   componentDidMount() {
