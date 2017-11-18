@@ -88,18 +88,19 @@ class Ideas{
 
 class TimeController{
   constructor(socket, io){
-
-    socket.on('startTime', this.startTime);
+    this.io = io;
+    socket.on('startTime', this.startTime.bind(this));
   };
 
   startTime(data){
+
     if(!(data.name && data.time)) console.log('errror nie ma nazwy lub czasu')
     else{
       Channel.findOne({name: data.name}, (err, result) => {
         if(err) console.log(err);
         if(result) {
           Channel.update({name: data.name}, {$set: {phase:2}}, (err)=> {
-            io.to(data.name).emit(`phasechange`, 'phasechangeee'); // popr opis
+            this.io.to(data.name).emit(`phasechange`, 'phasechangeee'); // popr opis
           })
         }
         else console.log('brak wyniku');//nie znaleziono
