@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const mongoose = require('mongoose');
 
 class Application{
   constructor(){
@@ -27,11 +27,35 @@ class Application{
   };
   routes(){
     let app = this.app;
+    const Channel = mongoose.model('Channel');
+
 
     app.get('/', function(req, res) {
       res.sendFile(`${__dirname}/build/index.html`);
     });
 
+    app.post('/createchannel', function(req, res) {
+      if(req.body.name && req.body.time){
+        new Channel({name: req.body.name, time: req.body.time}).save((err, result) => {
+          if(err){
+            if(err.code === 11000){
+              res.status(400).json({success: false, message: "Nazwa kanału jest używana."})
+            }else{
+              console.log(err);
+              res.status(400).json({success: false, message: "Błąd tworzenia kanału."})
+            }
+          }else{
+            res.redirect('/'+req.body.name);
+          }
+        });
+      }
+    });
+
+    app.get('/:name', (req,res)=>{
+      let name = req.params.name;
+      res.sendFile(`${__dirname}/build/index.html`);
+
+    });
   };
   sockets(){
     const http = require('http').Server(this.app);

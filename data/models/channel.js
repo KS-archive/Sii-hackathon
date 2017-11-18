@@ -1,7 +1,10 @@
 var mongoose = require('mongoose');
 
 var channelSchema = mongoose.Schema({
-  name: String,
+  name: {
+    unique: true,
+    type: String
+  },
   time: Number
 });
 
