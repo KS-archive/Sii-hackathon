@@ -11,7 +11,8 @@ var channelSchema = mongoose.Schema({
   },
   idea: [{
     context: String
-  }]
+  }],
+  participants: [String]
 });
 
 module.exports = mongoose.model('Channel', channelSchema);
