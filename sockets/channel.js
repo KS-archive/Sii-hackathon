@@ -37,6 +37,18 @@ class Participants {
   }
 
 
+}
+
+class Ideas{
+  constructor(socket, io){
+    socket.on('addIdea', this.add);
+    socket.on('removeIdea', this.remove);
+    socket.on('changeIdea', this.change);
+  };
+
+  add(data){};
+  remove(data){};
+  change(data){};
 
 }
 
@@ -68,15 +80,16 @@ module.exports  = (socket, io) => {
   })
 
   socket.on('clear', function (data) {
-    if(!data.name) console.log('blad czyszczenia ekranu')
+    if(!data) console.log('blad czyszczenia ekranu')
     else {
-      Channel.update({name: data.name}, {$set: {idea: [], time: 0}}, (err)=>{
-        if(err) io.to(data.name).emit(`Błąd czyszczenia pomysłów.`);
-        io.to(data.name).emit(`Wyczyszczono pomysły`);
+      Channel.update({name: data}, {$set: {idea: [], time: 0}}, (err)=>{
+        if(err) io.to(data).emit(`Błąd czyszczenia pomysłów.`);
+        io.to(data).emit(`Wyczyszczono pomysły`);
       });
     }
   })
 
 
   new Participants(socket, io);
+  new Ideas(socket, io);
 };

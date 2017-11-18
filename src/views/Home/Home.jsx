@@ -10,14 +10,17 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      roomName: '',
+      name: '',
+      fullname: '',
+      time: '',
     };
   }
 
   createRoom = () => {
-    const { roomName } = this.state;
-    this.props.createBoard(roomName, () => {
-      window.location.href = `/${roomName}`;
+    const { name } = this.state;
+    this.props.createBoard(this.state, () => {
+      console.log(name);
+      window.location.href = `/${name}`;
     }, () => {
       this.props.addNotification('Wystąpił błąd', 'Ten pokój jest obecnie zajęty', 'error');
     });
@@ -32,8 +35,20 @@ class Home extends Component {
           <Subheader>Wpisz nazwę pokoju i rozpocznij nawet w 30 sekund</Subheader>
           <Input
             floatingLabelText="Nazwa pokoju"
-            value={this.state.roomName}
-            onChange={e => this.setState({ roomName: e.target.value })}
+            value={this.state.name}
+            onChange={e => this.setState({ name: e.target.value })}
+            {...inputStyle}
+          />
+          <Input
+            floatingLabelText="Imię i nazwisko"
+            value={this.state.fullname}
+            onChange={e => this.setState({ fullname: e.target.value })}
+            {...inputStyle}
+          />
+          <Input
+            floatingLabelText="Czas burzy mózgów (w minutach)"
+            value={this.state.time}
+            onChange={e => this.setState({ time: e.target.value })}
             {...inputStyle}
           />
           <Button primary onClick={this.createRoom} label="Utwórz pokój" />

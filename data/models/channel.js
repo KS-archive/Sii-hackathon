@@ -9,10 +9,14 @@ var channelSchema = mongoose.Schema({
     default: 0,
     type: Number
   },
-  idea: [{
-    context: String
-  }],
-  participants: [String]
+  idea: {
+    type: [String],
+    default: []
+  },
+  participants: {
+    type: [String],
+    default: []
+  }
 });
 
 module.exports = mongoose.model('Channel', channelSchema);

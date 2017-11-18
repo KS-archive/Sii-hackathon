@@ -2,8 +2,11 @@ import styled from 'styled-components';
 import { media } from './constants/styles';
 
 export const Container = styled.div`
-  width: 1140px;
+  width: 1600px;
   margin: 0 auto;
+  ${media.xl`
+    width: 1140px;
+  `}
   ${media.lg`
     width: 900px;
   `}
