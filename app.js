@@ -35,8 +35,8 @@ class Application{
     });
 
     app.post('/createchannel', function(req, res) {
-      if(req.body.name && req.body.time){
-        new Channel({name: req.body.name, time: req.body.time}).save((err, result) => {
+      if(req.body.name && req.body.time && req.body.fullname){
+        new Channel({name: req.body.name, time: req.body.time, fullname: req.body.fullname}).save((err, result) => {
           if(err){
             if(err.code === 11000){
               res.status(400).json({success: false, message: "Nazwa kanału jest używana."})
@@ -46,7 +46,7 @@ class Application{
             }
           }else{
             //res.redirect('/'+req.body.name);
-            res.status(200).json({success: true})
+            res.cookie('admin', true);
           }
         });
       }else{

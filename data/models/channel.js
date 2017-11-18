@@ -5,7 +5,10 @@ var channelSchema = mongoose.Schema({
     unique: true,
     type: String
   },
-  time: Number
+  time: {
+    default: 0,
+    type: Number
+  }
 });
 
 module.exports = mongoose.model('Channel', channelSchema);
