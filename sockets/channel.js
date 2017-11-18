@@ -4,8 +4,9 @@ const Channel = mongoose.model('Channel');
 
 class Participants {
   constructor(socket, io) {
-    socket.on('addParticipant', this.add);
-    socket.on('removeParticipant', this.remove);
+    this.io = io;
+    socket.on('addParticipant', this.add.bind(this));
+    socket.on('removeParticipant', this.remove.bind(this));
   };
 
   add(data) {
@@ -13,7 +14,7 @@ class Participants {
     else {
       Channel.update({name: data.name}, {$addToSet: {participants: data.fullname}}, (err, newParticipants) => {
         if (err) console.log('blad dodawania participanta');
-        this._emitParticipants(io,data.name, newParticipants.participants);
+        this.io.to(data.name).emit(newParticipants);
       });
     }
   };
@@ -28,7 +29,7 @@ class Participants {
           });
           Channel.update({name: date.name}, {$set: {participants: updatedParticipants}}, (err, newParticipants) => {
             if (err) console.log('brak parametru fullname');
-            this._emitParticipants(io,data.name, newParticipants.participants);
+            this.io.to(data.name).emit(newParticipants);
           });
 
         }
@@ -37,10 +38,6 @@ class Participants {
     }
 
   }
-
-  _emitParticipants(io, name, participants){
-    io.to(name).emit(participants);
-  };
 
 
 }

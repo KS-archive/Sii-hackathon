@@ -39,6 +39,8 @@ class Index extends Component {
 function mapStateToProps(state) {
   return {
     notifications: state.notifications,
+    board: state.board,
+    people: state.people,
   };
 }
 
