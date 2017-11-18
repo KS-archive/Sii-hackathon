@@ -3,7 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import AddIdea from 'material-ui/svg-icons/content/add';
 import { inputStyle } from '../../../utils/constants/styles';
-import { IdeaWrapper, Text, Input } from './NewIdea_styles';
+import { ExtendedIdeaWrapper, StyledDialog, Text, Input } from './NewIdea_styles';
 
 export default class NewIdea extends Component {
   state = {
@@ -39,31 +39,33 @@ export default class NewIdea extends Component {
       <FlatButton
         label="Dodaj pomysł"
         primary
-        keyboardFocused
         onClick={this.submit}
       />,
     ];
 
     return [
-      <IdeaWrapper key="IdeaWrapper" onClick={this.handleOpen}>
+      <ExtendedIdeaWrapper key="ExtendedIdeaWrapper" onClick={this.handleOpen}>
         <AddIdea />
         <Text>Dodaj pomysł</Text>
-      </IdeaWrapper>,
-      <Dialog
+      </ExtendedIdeaWrapper>,
+      <StyledDialog
         key="Dialog"
-        title="Dialog With Actions"
+        title="Dodaj pomysł"
         actions={actions}
         modal={false}
         open={this.state.open}
         onRequestClose={this.handleClose}
       >
         <Input
-          floatingLabelText="Nazwa pokoju"
+          floatingLabelText="Opis pomysłu"
           value={this.state.ideaText}
           onChange={e => this.setState({ ideaText: e.target.value })}
+          multiLine
+          rows={3}
+          rowsMax={3}
           {...inputStyle}
         />
-      </Dialog>,
+      </StyledDialog>,
     ];
   }
 }
