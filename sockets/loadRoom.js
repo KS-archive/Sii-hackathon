@@ -3,7 +3,6 @@ const Channel = mongoose.model('Channel');
 
 module.exports  = (socket, io) => {
   socket.on('loadRoom', function (data) {
-    console.log(io);
     if(data === "") io.emit('connection_response', 'Brak nazwy.');
     else{
       Channel.findOne({name: data}, function (err, result) {
