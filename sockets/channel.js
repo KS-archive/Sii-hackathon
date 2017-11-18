@@ -113,7 +113,7 @@ class TimeController{
   };
 
   changeToThirdPhase(data){
-    if(data) console.log('errror nie ma nazwy lub czasu')
+    if(!data) console.log('errror nie ma nazwy lub czasu')
     else{
       Channel.update({name: data}, {$set: {phase:3}}, (err)=> {
         this.io.to(data).emit(`phasechange`, 3); // popr opis
