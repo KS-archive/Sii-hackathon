@@ -9,6 +9,8 @@ export const Container = styled.div`
   width: 100%;
   min-height: 100%;
   background-color: ${colorPalette.primary1Color};
+  background-image: url('/img/subtle_grunge.png');
+  background-repeat: repeat;
 `;
 
 export const Middle = styled.div`
