@@ -20,6 +20,7 @@ class Participants {
   };
 
   remove(data) {
+    console.log('remove');
     if (!(data.fullname && data.name)) console.log('brak parametru fullname');
     else {
       Channel.findOne({name: data.name}, (err, result) => {

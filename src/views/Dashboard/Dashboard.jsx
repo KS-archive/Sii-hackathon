@@ -20,6 +20,7 @@ class Dashboard extends Component {
       time: '10:38',
       open: false,
       personText: '',
+      activeUser: '',
     };
   }
 
@@ -30,7 +31,7 @@ class Dashboard extends Component {
         const cookie = getCookie('admin');
 
         if (cookie) {
-          this.submit(cookie);
+          this.submit(null, cookie);
         } else {
           this.setState({ open: true });
         }
@@ -45,10 +46,6 @@ class Dashboard extends Component {
     });
   }
 
-  endSession = () => {
-    this.socket.emit('clear', this.boardName);
-  }
-
   handleOpen = () => {
     this.setState({ open: true });
   };
@@ -57,13 +54,42 @@ class Dashboard extends Component {
     this.setState({ open: false });
   };
 
-  submit = (admin = '') => {
-    console.log(this.props.board);
+  submit = (e, admin = '') => {
+    const fullname = admin || this.state.personText;
+    console.log(fullname);
     this.socket.emit('addParticipant', {
-      fullname: admin || this.state.personText,
+      fullname,
       name: this.boardName,
     });
-    this.handleClose();
+    this.setState({ activeUser: fullname, open: false });
+  }
+
+  startSession = () => {
+    this.socket.emit('startTime', {
+      name: this.boardName,
+      time: this.props.board.time,
+    });
+  }
+
+  endSession = () => {
+    console.log('Zakończono sesję kreatywną');
+  }
+
+  restartSession = () => {
+    this.socket.emit('clear', this.boardName);
+  }
+
+  phaseButton = () => {
+    switch (this.props.board.phase) {
+      case 1:
+        return <End onClick={this.startSession}>Rozpocznij</End>;
+      case 2:
+        return <End onClick={this.endSession}>Zakończ</End>;
+      case 3:
+        return <End onClick={this.restartSession}>Restart</End>;
+      default:
+        return <End onClick={this.startSession}>Rozpocznij</End>;
+    }
   }
 
   render() {
@@ -87,7 +113,7 @@ class Dashboard extends Component {
               onClick={this.addMinute}
             />
           </Middle>
-          <End onClick={this.endSession}>Zakończ</End>
+          {this.phaseButton()}
         </Panel>
         <Ideas>
           <NewIdea socket={this.socket} room={this.boardName} />
