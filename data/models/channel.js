@@ -10,12 +10,19 @@ var channelSchema = mongoose.Schema({
     type: Number
   },
   idea: {
-    type: [String],
+    type: [{
+      content: String,
+      id: String
+    }],
     default: []
   },
   participants: {
     type: [String],
     default: []
+  },
+  phase: {
+    type: Number,
+    default: 0
   }
 });
 
