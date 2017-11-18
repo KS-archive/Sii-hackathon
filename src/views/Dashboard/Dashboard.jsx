@@ -5,8 +5,9 @@ import FlatButton from 'material-ui/FlatButton';
 import io from 'socket.io-client';
 import Idea from './Idea/Idea';
 import NewIdea from './NewIdea/NewIdea';
+import { getCookie } from '../../utils/cookies';
 import { inputStyle } from '../../utils/constants/styles';
-import { createBoard } from '../../actions/board';
+import { initializeBoard } from '../../actions/board';
 import { Wrapper, Ideas, Panel, Middle, Header, Time, Button, End, StyledDialog, Input } from './Dashboard_styles';
 
 class Dashboard extends Component {
@@ -23,8 +24,17 @@ class Dashboard extends Component {
   }
 
   componentWillMount() {
-    this.socket.emit('loadRoom', this.boardName);
-    this.socket.on('connection_response', () => {
+    this.props.initializeBoard(this.boardName, () => {
+      this.socket.emit('loadRoom', this.boardName);
+      this.socket.on('connection_response', () => {
+        const cookie = getCookie('admin');
+
+        if (cookie) {
+          this.submit(cookie);
+        } else {
+          this.setState({ open: true });
+        }
+      });
     });
   }
 
@@ -47,20 +57,19 @@ class Dashboard extends Component {
     this.setState({ open: false });
   };
 
-  submit = () => {
-    console.log(this.state.personText);
+  submit = (admin = '') => {
+    console.log(this.props.board);
+    this.socket.emit('addParticipant', {
+      fullname: admin || this.state.personText,
+      name: this.boardName,
+    });
     this.handleClose();
   }
 
   render() {
     const actions = [
       <FlatButton
-        label="Anuluj"
-        primary
-        onClick={this.handleClose}
-      />,
-      <FlatButton
-        label="Dodaj pomysł"
+        label="Dołącz"
         primary
         onClick={this.submit}
       />,
@@ -74,7 +83,7 @@ class Dashboard extends Component {
             <Time>{this.state.time}</Time>
             <Button
               primary
-              label="Dodaj minutę"
+              label="Dołącz"
               onClick={this.addMinute}
             />
           </Middle>
@@ -82,14 +91,14 @@ class Dashboard extends Component {
         </Panel>
         <Ideas>
           <NewIdea socket={this.socket} room={this.boardName} />
-          <Idea text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc et libero orci. Sed sit amet imperdiet orci. Donec ornare, felis eu sodales finibus, massa libero hendrerit cras amet." />
+          {this.props.ideas.map(idea => <Idea text={idea} />)}
         </Ideas>
       </Wrapper>,
       <StyledDialog
         key="Dialog"
-        title="Dodaj pomysł"
+        title="Dołącz do burzy mózgów"
         actions={actions}
-        modal={false}
+        modal
         open={this.state.open}
         onRequestClose={this.handleClose}
       >
@@ -97,9 +106,6 @@ class Dashboard extends Component {
           floatingLabelText="Imię i nazwisko"
           value={this.state.personText}
           onChange={e => this.setState({ personText: e.target.value })}
-          multiLine
-          rows={3}
-          rowsMax={3}
           {...inputStyle}
         />
       </StyledDialog>,
@@ -107,8 +113,16 @@ class Dashboard extends Component {
   }
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ createBoard }, dispatch);
+function mapStateToProps(state) {
+  return {
+    board: state.board,
+    people: state.people,
+    ideas: state.ideas,
+  };
 }
 
-export default connect(null, mapDispatchToProps)(Dashboard);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ initializeBoard }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

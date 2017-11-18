@@ -4,8 +4,9 @@ const Channel = mongoose.model('Channel');
 
 class Participants {
   constructor(socket, io) {
-    socket.on('addParticipant', this.add);
-    socket.on('removeParticipant', this.remove);
+    this.io = io;
+    socket.on('addParticipant', this.add.bind(this));
+    socket.on('removeParticipant', this.remove.bind(this));
   };
 
   add(data) {
@@ -13,7 +14,7 @@ class Participants {
     else {
       Channel.update({name: data.name}, {$addToSet: {participants: data.fullname}}, (err, newParticipants) => {
         if (err) console.log('blad dodawania participanta');
-        this._emitParticipants(io,data.name, newParticipants.participants);
+        this.io.to(data.name).emit(newParticipants);
       });
     }
   };
@@ -28,7 +29,7 @@ class Participants {
           });
           Channel.update({name: date.name}, {$set: {participants: updatedParticipants}}, (err, newParticipants) => {
             if (err) console.log('brak parametru fullname');
-            this._emitParticipants(io,data.name, newParticipants.participants);
+            this.io.to(data.name).emit(newParticipants);
           });
 
         }
@@ -38,27 +39,25 @@ class Participants {
 
   }
 
-  _emitParticipants(io, name, participants){
-    io.to(name).emit(participants);
-  };
-
 
 }
 
 class Ideas{
   constructor(socket, io){
-    socket.on('addIdea', this.add);
-    socket.on('removeIdea', this.remove);
-    socket.on('changeIdea', this.change);
+    this.io = io;
+    socket.on('addIdea', this.add.bind(this));
+    socket.on('removeIdea', this.remove.bind(this));
+    socket.on('changeIdea', this.change.bind(this));
   };
 
   add(data){
     if(!(data.name && data.idea)) console.log('errror add idea');
     else{
-      Channel.update({name: data.name}, {$addToSet: {idea: {content: data.idea, id: uuidv4()}}}, (err, newIdeas)=>{
-        if(err) io.to(data.name).emit(`Błąd dodawania pomysłu.`);
-        this._emitIdeas(io,data.name, newIdeas.idea);
-
+      Channel.update({name: data.name}, {$addToSet: {idea: {content: data.idea, id: uuidv4()}}}, (err)=>{
+        Channel.findOne({name: data.name}, (err, newIdeas)=>{
+          if(err) this.io.to(data.name).emit(`Błąd dodawania pomysłu.`);
+          this._emitIdeas(this.io,data.name, newIdeas.idea);
+        });
       });
     }
   };
@@ -67,25 +66,63 @@ class Ideas{
     else{
       Channel.findOne({name: data.name}, (err, result)=>{
         if(result){
-          //1111111111111
+          let newIdeas = result.idea.filter(elements => {
+            elements.id !== data.id;
+          });
+          Channel.update({name: data.name}, {$set: {idea: newIdeas}}, (err, newIdeas)=>{
+            Channel.findOne({name: data.name}, (err, newIdeas)=>{
+              if(err) this.io.to(data.name).emit(`Błąd dodawania pomysłu.`);
+              this._emitIdeas(this.io,data.name, newIdeas.idea);
+            });
+          })
         }
       });
     }
   };
-  change(data){};
+
+  change(data){
+
+  };
   _emitIdeas(io, name, ideas){
-    io.to(name).emit(ideas);
+    io.to(name).emit("changeIdeas",ideas);
   };
 
 }
 
 class TimeController{
   constructor(socket, io){
-
-    socket.on('startTime', this.startTime);
+    this.io = io;
+    socket.on('startTime', this.startTime.bind(this));
+    socket.on('goThirdPhase', this.changeToThirdPhase.bind(this));
   };
 
-  startTime(data){};
+  startTime(data){
+
+    if(!(data.name && data.time)) console.log('errror nie ma nazwy lub czasu')
+    else{
+      Channel.findOne({name: data.name}, (err, result) => {
+        if(err) console.log(err);
+        if(result) {
+          Channel.update({name: data.name}, {$set: {phase:2}}, (err)=> {
+            this.io.to(data.name).emit(`phasechange`, 2); // popr opis
+          })
+        }
+        else console.log('brak wyniku');//nie znaleziono
+      })
+    }
+  };
+
+  changeToThirdPhase(data){
+    if(!data) console.log('errror nie ma nazwy lub czasu')
+    else{
+      Channel.update({name: data}, {$set: {phase:3}}, (err)=> {
+        Channel.findOne({name:data}, (err, result)=> {
+          this.io.to(data).emit(`phasechange`, {phase:1, deadline: new Date().getTime() + result.time });
+        });
+      })
+    }
+  };
+
   addTime(data){};
 }
 
@@ -109,7 +146,7 @@ module.exports  = (socket, io) => {
   socket.on('clear', function (data) {
     if(!data) console.log('blad czyszczenia ekranu')
     else {
-      Channel.update({name: data}, {$set: {idea: [], time: 0}}, (err)=>{
+      Channel.update({name: data}, {$set: {idea: [], time: 0, phase:1}}, (err)=>{
         if(err) io.to(data).emit(`Błąd czyszczenia pomysłów.`);
         io.to(data).emit(`Wyczyszczono pomysły`);
       });

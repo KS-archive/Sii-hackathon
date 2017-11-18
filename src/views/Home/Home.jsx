@@ -4,6 +4,7 @@ import bindActionCreators from 'redux/lib/bindActionCreators';
 import { createBoard } from '../../actions/board';
 import { addNotification } from '../../actions/notifications';
 import { inputStyle } from '../../utils/constants/styles';
+import { setCookie } from '../../utils/cookies';
 import { Container, Middle, Logo, Header, Subheader, Input, Button } from './Home_styles';
 
 class Home extends Component {
@@ -17,9 +18,11 @@ class Home extends Component {
   }
 
   createRoom = () => {
-    const { name } = this.state;
-    this.props.createBoard(this.state, () => {
-      console.log(name);
+    const { name, fullname, time } = this.state;
+    this.props.createBoard({
+      name, fullname, time, phase: 1,
+    }, () => {
+      setCookie('admin', fullname);
       window.location.href = `/${name}`;
     }, () => {
       this.props.addNotification('Wystąpił błąd', 'Ten pokój jest obecnie zajęty', 'error');
