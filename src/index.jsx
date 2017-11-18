@@ -37,8 +37,13 @@ import './scss/global.scss';
 import { colorPalette } from './utils/constants/styles';
 
 
-// SW
-navigator.serviceWorker.register('/sw.js');
+if ('serviceWorker' in window.navigator) {
+  window.navigator.serviceWorker
+    .register('/sw.js')
+    .then(() => {
+      console.log('Service worker registered!');
+    });
+}
 // Middleware
 /* eslint-disable no-underscore-dangle */
 const createStoreWithMiddleware = applyMiddleware(ReduxThunk)(createStore);

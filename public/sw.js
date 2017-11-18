@@ -1,21 +1,8 @@
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open('first-app')
-      .then(function(cache) {
-        cache.addAll([
-          '/',
-          '/index.html',
-        ])
-      })
-  );
-  return self.clients.claim();
+self.addEventListener('install', function(e) {
+  console.log('Installing service worker');
 });
 
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(res) {
-        return res;
-      })
-  );
+self.addEventListener('activate', function(e) {
+  console.log('Activating service worker');
+  return self.clients.claim();
 });
