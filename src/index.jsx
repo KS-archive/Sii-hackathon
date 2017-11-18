@@ -28,6 +28,7 @@ import reducers from './reducers';
 // Views
 import Index from './views/Index/Index';
 import Home from './views/Home/Home';
+import Dashboard from './views/Dashboard/Dashboard';
 
 // Main styles import.
 import './scss/global.scss';
@@ -67,6 +68,7 @@ ReactDOM.render(
         <Router history={customHistory}>
           <Index>
             <Switch>
+              <Route path="/:boardName" component={Dashboard} />
               <Route path="/" component={Home} />
             </Switch>
           </Index>
