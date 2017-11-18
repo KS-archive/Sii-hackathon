@@ -37,6 +37,18 @@ class Participants {
   }
 
 
+}
+
+class Ideas{
+  constructor(socket, io){
+    socket.on('addIdea', this.add);
+    socket.on('removeIdea', this.remove);
+    socket.on('changeIdea', this.change);
+  };
+
+  add(data){};
+  remove(data){};
+  change(data){};
 
 }
 
@@ -79,4 +91,5 @@ module.exports  = (socket, io) => {
 
 
   new Participants(socket, io);
+  new Ideas(socket, io);
 };
