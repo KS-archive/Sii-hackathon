@@ -94,6 +94,7 @@ class TimeController{
   constructor(socket, io){
     this.io = io;
     socket.on('startTime', this.startTime.bind(this));
+    socket.on('goThirdPhase', this.changeToThirdPhase.bind(this));
   };
 
   startTime(data){
@@ -111,6 +112,16 @@ class TimeController{
       })
     }
   };
+
+  changeToThirdPhase(data){
+    if(data) console.log('errror nie ma nazwy lub czasu')
+    else{
+      Channel.update({name: data}, {$set: {phase:3}}, (err)=> {
+        this.io.to(data).emit(`phasechange`, 3); // popr opis
+      })
+    }
+  };
+
   addTime(data){};
 }
 
