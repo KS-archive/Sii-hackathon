@@ -19,6 +19,7 @@ class Home extends Component {
   createRoom = () => {
     const { name } = this.state;
     this.props.createBoard(this.state, () => {
+      console.log(name);
       window.location.href = `/${name}`;
     }, () => {
       this.props.addNotification('Wystąpił błąd', 'Ten pokój jest obecnie zajęty', 'error');

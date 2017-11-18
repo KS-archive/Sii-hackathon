@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import AddIdea from 'material-ui/svg-icons/content/add';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import AddIdea from 'material-ui/svg-icons/content/add';
 import { inputStyle } from '../../../utils/constants/styles';
-import { IdeaWrapper, Input } from './Idea_styles';
+import { IdeaWrapper, Text, Input } from './NewIdea_styles';
 
 export default class NewIdea extends Component {
   state = {
@@ -32,12 +32,12 @@ export default class NewIdea extends Component {
   render() {
     const actions = [
       <FlatButton
-        label="Cancel"
+        label="Anuluj"
         primary
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Submit"
+        label="Dodaj pomysł"
         primary
         keyboardFocused
         onClick={this.submit}
@@ -47,6 +47,7 @@ export default class NewIdea extends Component {
     return [
       <IdeaWrapper key="IdeaWrapper" onClick={this.handleOpen}>
         <AddIdea />
+        <Text>Dodaj pomysł</Text>
       </IdeaWrapper>,
       <Dialog
         key="Dialog"

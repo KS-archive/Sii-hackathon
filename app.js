@@ -45,12 +45,11 @@ class Application{
               res.status(400).json({success: false, message: "Błąd tworzenia kanału."})
             }
           }else{
-            //res.redirect('/'+req.body.name);
-            res.cookie('admin', true);
+            res.status(200).json({success: true});
           }
         });
       }else{
-        req.status(400).json({success: false, message: "Błędne parametry."})
+        res.status(400).json({success: false, message: "Błędne parametry."})
       }
     });
 
