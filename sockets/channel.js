@@ -80,11 +80,11 @@ module.exports  = (socket, io) => {
   })
 
   socket.on('clear', function (data) {
-    if(!data.name) console.log('blad czyszczenia ekranu')
+    if(!data) console.log('blad czyszczenia ekranu')
     else {
-      Channel.update({name: data.name}, {$set: {idea: [], time: 0}}, (err)=>{
-        if(err) io.to(data.name).emit(`Błąd czyszczenia pomysłów.`);
-        io.to(data.name).emit(`Wyczyszczono pomysły`);
+      Channel.update({name: data}, {$set: {idea: [], time: 0}}, (err)=>{
+        if(err) io.to(data).emit(`Błąd czyszczenia pomysłów.`);
+        io.to(data).emit(`Wyczyszczono pomysły`);
       });
     }
   })

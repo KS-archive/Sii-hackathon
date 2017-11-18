@@ -45,7 +45,6 @@ class Application{
               res.status(400).json({success: false, message: "Błąd tworzenia kanału."})
             }
           }else{
-            //res.redirect('/'+req.body.name);
             res.status(200).json({success: true});
           }
         });

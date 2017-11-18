@@ -1,4 +1,20 @@
 import styled from 'styled-components';
+import { colorPalette } from '../../utils/constants/styles';
+
+export const AppName = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background-color: ${colorPalette.primary2Color};
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  font-size: 24px;
+  font-weight: 300;
+  color: #fff;
+`;
 
 export const Container = styled.div`
   position: relative;
@@ -8,7 +24,7 @@ export const Container = styled.div`
 
 export const Body = styled.div`
   position: absolute;
-  top: 0;
+  top: 80px;
   left: 0;
   right: 0;
   bottom: 0;
