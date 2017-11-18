@@ -46,7 +46,7 @@ class Application{
             }
           }else{
             //res.redirect('/'+req.body.name);
-            res.status(400).json({success: true})
+            res.status(200).json({success: true})
           }
         });
       }else{
