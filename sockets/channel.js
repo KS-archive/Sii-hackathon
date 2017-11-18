@@ -10,9 +10,9 @@ class Participants {
   add(data) {
     if (!(data.fullname && data.name)) console.log('brak parametru fullname');
     else {
-      Channel.update({name: data.name}, {$addToSet: {participants: data.fullname}}, (err) => {
+      Channel.update({name: data.name}, {$addToSet: {participants: data.fullname}}, (err, newParticipants) => {
         if (err) console.log('blad dodawania participanta');
-        // emit brodcast user dodany
+        this._emitParticipants(io,data.name, newParticipants.participants);
       });
     }
   };
@@ -25,8 +25,9 @@ class Participants {
           let updatedParticipants = result.participants.filter(element => {
             element !== data.fullname;
           });
-          Channel.update({name: date.name}, {$set: {participants: updatedParticipants}}, (err) => {
+          Channel.update({name: date.name}, {$set: {participants: updatedParticipants}}, (err, newParticipants) => {
             if (err) console.log('brak parametru fullname');
+            this._emitParticipants(io,data.name, newParticipants.participants);
           });
 
         }
@@ -35,6 +36,10 @@ class Participants {
     }
 
   }
+
+  _emitParticipants(io, name, participants){
+    io.to(name).emit(participants);
+  };
 
 
 }
@@ -50,6 +55,16 @@ class Ideas{
   remove(data){};
   change(data){};
 
+}
+
+class TimeController{
+  constructor(socket, io){
+
+    socket.on('startTime', this.startTime);
+  };
+
+  startTime(data){};
+  addTime(data){};
 }
 
 module.exports  = (socket, io) => {
@@ -92,4 +107,5 @@ module.exports  = (socket, io) => {
 
   new Participants(socket, io);
   new Ideas(socket, io);
+  new TimeController(socket, io);
 };
