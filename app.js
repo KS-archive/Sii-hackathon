@@ -68,6 +68,8 @@ class Application{
       console.log('A user connected');
       require('./sockets/loadRoom')(socket, io);
 
+      require('./sockets/channel')(socket, io);
+
 
       socket.on('disconnect', function () {
         console.log('A user disconnected');
