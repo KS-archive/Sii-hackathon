@@ -53,10 +53,11 @@ class Ideas{
   add(data){
     if(!(data.name && data.idea)) console.log('errror add idea');
     else{
-      Channel.update({name: data.name}, {$addToSet: {idea: {content: data.idea, id: uuidv4()}}}, (err, newIdeas)=>{
-        if(err) this.io.to(data.name).emit(`Błąd dodawania pomysłu.`);
-        this._emitIdeas(this.io,data.name, newIdeas.idea);
-
+      Channel.update({name: data.name}, {$addToSet: {idea: {content: data.idea, id: uuidv4()}}}, (err)=>{
+        Channel.findOne({name: data.name}, (err, newIdeas)=>{
+          if(err) this.io.to(data.name).emit(`Błąd dodawania pomysłu.`);
+          this._emitIdeas(this.io,data.name, newIdeas.idea);
+        });
       });
     }
   };
@@ -69,8 +70,10 @@ class Ideas{
             elements.id !== data.id;
           });
           Channel.update({name: data.name}, {$set: {idea: newIdeas}}, (err, newIdeas)=>{
-            if(err) this.io.to(data.name).emit(`Błąd dodawania pomysłu.`);
-            this._emitIdeas(this.io,data.name, newIdeas.idea);
+            Channel.findOne({name: data.name}, (err, newIdeas)=>{
+              if(err) this.io.to(data.name).emit(`Błąd dodawania pomysłu.`);
+              this._emitIdeas(this.io,data.name, newIdeas.idea);
+            });
           })
         }
       });
