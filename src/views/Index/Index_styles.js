@@ -23,7 +23,6 @@ export const Container = styled.div`
 `;
 
 export const Body = styled.div`
-  overflow-y: auto;
   position: absolute;
   top: 80px;
   left: 0;

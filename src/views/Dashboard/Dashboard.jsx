@@ -3,7 +3,7 @@ import connect from 'react-redux/lib/connect/connect';
 import bindActionCreators from 'redux/lib/bindActionCreators';
 import io from 'socket.io-client';
 import { createBoard } from '../../actions/board';
-import { Container } from './Dashboard_styles';
+import { Wrapper, Ideas, Idea, Panel, Middle, Header, Time, Button, End } from './Dashboard_styles';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -20,16 +20,41 @@ class Dashboard extends Component {
   componentWillMount() {
     this.socket.emit('loadRoom', this.boardName);
 
-    this.socket.on('connection_response', (connectionResult) => {
-      console.log(connectionResult);
+    this.socket.on('connection_response', () => {
+      this.socket.emit('setTime', {
+        name: this.boardName,
+        time: 300000,
+      });
     });
   }
 
   render() {
     return (
-      <Container>
-        Hello World!
-      </Container>
+      <Wrapper>
+        <Panel>
+          <Middle>
+            <Header>Czas do końca</Header>
+            <Time>10:38</Time>
+            <Button primary label="Dodaj minutę" />
+          </Middle>
+          <End>Zakończ</End>
+        </Panel>
+        <Ideas>
+          <Idea>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc et libero orci. Sed sit amet imperdiet orci. Donec ornare, felis eu sodales finibus, massa libero hendrerit cras amet.</Idea>
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+          <Idea />
+        </Ideas>
+      </Wrapper>
     );
   }
 }

@@ -42,9 +42,9 @@ export const Subheader = styled.h3`
 `;
 
 export const Input = styled(TextField)`
-  margin-bottom: 30px;
+  width: 300px !important;
 `;
 
 export const Button = styled(RaisedButton)`
-  box-sizing: border-box;
+  margin-top: 30px;
 `;
