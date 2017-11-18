@@ -67,7 +67,13 @@ class Ideas{
     else{
       Channel.findOne({name: data.name}, (err, result)=>{
         if(result){
-          //1111111111111
+          let newIdeas = result.idea.filter(elements => {
+            elements.id !== data.id;
+          });
+          Channel.update({name: data.name}, {$set: {idea: newIdeas}}, (err, newIdeas)=>{
+            if(err) io.to(data.name).emit(`Błąd dodawania pomysłu.`);
+            this._emitIdeas(io,data.name, newIdeas.idea);
+          })
         }
       });
     }
