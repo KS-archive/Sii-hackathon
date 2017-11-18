@@ -100,7 +100,7 @@ class TimeController{
         if(err) console.log(err);
         if(result) {
           Channel.update({name: data.name}, {$set: {phase:2}}, (err)=> {
-            this.io.to(data.name).emit(`phasechange`, 'phasechangeee'); // popr opis
+            this.io.to(data.name).emit(`phasechange`, 2); // popr opis
           })
         }
         else console.log('brak wyniku');//nie znaleziono
