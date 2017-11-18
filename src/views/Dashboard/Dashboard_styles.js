@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import RaisedButton from 'material-ui/RaisedButton';
+import Dialog from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
 import { Container } from '../../utils/styledComponents';
 import { colorPalette, media } from '../../utils/constants/styles';
 
@@ -72,4 +74,12 @@ export const End = styled.div`
   text-transform: uppercase;
   color: #fff;
   text-align: center;
+`;
+
+export const StyledDialog = styled(Dialog)`
+  box-sizing: border-box;
+`;
+
+export const Input = styled(TextField)`
+  width: 100% !important;
 `;

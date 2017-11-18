@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import AddIdea from 'material-ui/svg-icons/content/add';
 import { inputStyle } from '../../../utils/constants/styles';

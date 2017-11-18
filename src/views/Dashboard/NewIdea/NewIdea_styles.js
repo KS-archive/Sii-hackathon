@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
 import { IdeaWrapper } from '../Idea/Idea_styles';
 import { colorPalette } from '../../../utils/constants/styles';
 
@@ -31,5 +32,9 @@ export const Text = styled.p`
 `;
 
 export const Input = styled(TextField)`
+  width: 100% !important;
+`;
+
+export const StyledDialog = styled(Dialog)`
   width: 100% !important;
 `;
