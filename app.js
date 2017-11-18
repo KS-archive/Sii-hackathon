@@ -46,7 +46,7 @@ class Application{
             }
           }else{
             //res.redirect('/'+req.body.name);
-            res.status(400).json({success: true})
+            res.status(200).json({success: true})
           }
         });
       }else{
@@ -60,13 +60,15 @@ class Application{
   };
 
   sockets(){
+    let io = this.io;
     const http = require('http').Server(this.app);
-    this.io = require('socket.io')(http);
+    io = require('socket.io')(http);
 
-    this.io.on('connection', function(socket) {
+    io.on('connection', function(socket) {
       console.log('A user connected');
+      require('./sockets/loadRoom')(socket, io);
 
-      require('./sockets/loadRoom')(socket, this.io);
+      require('./sockets/channel')(socket, io);
 
 
       socket.on('disconnect', function () {
