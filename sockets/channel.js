@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uuidv4 = require('uuid/v4');
 const Channel = mongoose.model('Channel');
 
 class Participants {
@@ -51,9 +52,30 @@ class Ideas{
     socket.on('changeIdea', this.change);
   };
 
-  add(data){};
-  remove(data){};
+  add(data){
+    if(!(data.name && data.idea)) console.log('errror add idea');
+    else{
+      Channel.update({name: data.name}, {$addToSet: {idea: {content: data.idea, id: uuidv4()}}}, (err, newIdeas)=>{
+        if(err) io.to(data.name).emit(`Błąd dodawania pomysłu.`);
+        this._emitIdeas(io,data.name, newIdeas.idea);
+
+      });
+    }
+  };
+  remove(data){
+    if(!(data.name && data.id)) console.log('errror add idea');
+    else{
+      Channel.findOne({name: data.name}, (err, result)=>{
+        if(result){
+          //1111111111111
+        }
+      });
+    }
+  };
   change(data){};
+  _emitIdeas(io, name, ideas){
+    io.to(name).emit(ideas);
+  };
 
 }
 
@@ -81,16 +103,6 @@ module.exports  = (socket, io) => {
         }
         else console.log('brak wyniku');//nie znaleziono
       })
-    }
-  })
-
-  socket.on('addIdea', function (data) {
-    if(!(data.name && data.idea)) console.log('errror add idea');
-    else{
-      Channel.update({name: data.name}, {$addToSet: {idea: data.idea}}, (err)=>{
-        if(err) io.to(data.name).emit(`Błąd dodawania pomysłu.`);
-        io.to(data.name).emit(`Dodano pomysł`);
-      });
     }
   })
 
