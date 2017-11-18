@@ -17,4 +17,14 @@ module.exports  = (socket, io) => {
       })
     }
   })
+
+  socket.on('addIdea', function (data) {
+    if(!(data.name && data.idea)) console.log('errror add idea');
+    else{
+      Channel.update({name: data.name}, {$addToSet: {idea: data.idea}}, (err)=>{
+        if(err) io.to(data.name).emit(`Błąd dodawania pomysłu.`);
+        io.to(data.name).emit(`Dodano pomysł`);
+      });
+    }
+  })
 };
