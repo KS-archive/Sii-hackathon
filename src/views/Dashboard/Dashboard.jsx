@@ -3,7 +3,7 @@ import connect from 'react-redux/lib/connect/connect';
 import bindActionCreators from 'redux/lib/bindActionCreators';
 import io from 'socket.io-client';
 import { createBoard } from '../../actions/board';
-import { Container, AppName, Middle, Header, Subheader, Input, Button } from './Dashboard_styles';
+import { Container } from './Dashboard_styles';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -26,19 +26,11 @@ class Dashboard extends Component {
   }
 
   render() {
-    return [
-      <AppName key="AppName">Brainstorm.io</AppName>,
-      <Container key="Container">
-        <Middle>
-          <Input
-            type="text"
-            value={this.state.roomName}
-            onChange={e => this.setState({ roomName: e.target.value })}
-          />
-          <Button onClick={this.createRoom}>Utwórz pokój</Button>
-        </Middle>
-      </Container>,
-    ];
+    return (
+      <Container>
+        Hello World!
+      </Container>
+    );
   }
 }
 

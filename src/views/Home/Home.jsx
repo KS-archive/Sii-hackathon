@@ -14,11 +14,10 @@ class Home extends Component {
     };
   }
 
-  createRoom = (e) => {
-    e.preventDefault();
+  createRoom = () => {
     const { roomName } = this.state;
     this.props.createBoard(roomName, () => {
-      this.props.history.push(`/${roomName}`);
+      window.location.href = `/${roomName}`;
     }, () => {
       this.props.addNotification('Wystąpił błąd', 'Ten pokój jest obecnie zajęty', 'error');
     });
