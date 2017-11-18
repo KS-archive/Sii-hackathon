@@ -81,7 +81,7 @@ class Ideas{
 
   };
   _emitIdeas(io, name, ideas){
-    io.to(name).emit(ideas);
+    io.to(name).emit("changeIdeas",ideas);
   };
 
 }
