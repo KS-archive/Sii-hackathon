@@ -59,7 +59,7 @@ class Application{
 
     app.get('/initialize/:name', (req,res)=>{
       if(req.params.name){
-        Channel.findOne({name:req.params.name}, (err,result)=>{
+        Channel.findOne({name: req.params.name}, (err,result)=>{
           if(err) res.status(400).json({success: false, message: "Błąd pobrania kanału."})
           if(result) res.status(200).send({success:true, data: result});
           else res.status(400).json({success: false, message: "Kanał nie istnieje."});
