@@ -99,7 +99,7 @@ class TimeController{
         if(err) console.log(err);
         if(result) {
           Channel.update({name: data.name}, {$set: {phase:2}}, (err)=> {
-            io.to(data.name).emit(`Dodano: ${data.time} min`); // popr opis
+            io.to(data.name).emit(`phasechange`, 'phasechangeee'); // popr opis
           })
         }
         else console.log('brak wyniku');//nie znaleziono
@@ -129,7 +129,7 @@ module.exports  = (socket, io) => {
   socket.on('clear', function (data) {
     if(!data) console.log('blad czyszczenia ekranu')
     else {
-      Channel.update({name: data}, {$set: {idea: [], time: 0}}, (err)=>{
+      Channel.update({name: data}, {$set: {idea: [], time: 0, phase:1}}, (err)=>{
         if(err) io.to(data).emit(`Błąd czyszczenia pomysłów.`);
         io.to(data).emit(`Wyczyszczono pomysły`);
       });
