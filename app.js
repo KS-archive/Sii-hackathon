@@ -36,7 +36,7 @@ class Application{
 
     app.post('/createchannel', function(req, res) {
       if(req.body.name && req.body.time && req.body.fullname){
-        new Channel({name: req.body.name, time: req.body.time, fullname: req.body.fullname, phase: 1}).save((err, result) => {
+        new Channel({name: req.body.name, time: req.body.time, fullname: req.body.fullname, phase: 1, deadline: (req.body.time + new Date().getTime())}).save((err, result) => {
           if(err){
             if(err.code === 11000){
               res.status(400).json({success: false, message: "Nazwa kanału jest używana."})

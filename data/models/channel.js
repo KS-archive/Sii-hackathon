@@ -9,6 +9,7 @@ var channelSchema = mongoose.Schema({
     default: 0,
     type: Number
   },
+  deadline: Number,
   idea: {
     type: [{
       content: String,
