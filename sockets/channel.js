@@ -32,15 +32,10 @@ class Participants {
             if (err) console.log('brak parametru fullname');
             this.io.to(data.name).emit(newParticipants);
           });
-
         }
       })
-
     }
-
   }
-
-
 }
 
 class Ideas{
@@ -70,7 +65,7 @@ class Ideas{
           let newIdeas = result.idea.filter(elements => {
             elements.id !== data.id;
           });
-          Channel.update({name: data.name}, {$set: {idea: newIdeas}}, (err, newIdeas)=>{
+          Channel.update({name: data.name}, {$set: {idea: newIdeas}}, (err)=>{
             Channel.findOne({name: data.name}, (err, newIdeas)=>{
               if(err) this.io.to(data.name).emit(`Błąd dodawania pomysłu.`);
               this._emitIdeas(this.io,data.name, newIdeas.idea);
@@ -82,7 +77,20 @@ class Ideas{
   };
 
   change(data){
+    if(!(data.name && data.id && data.newContent)) console.log('errror add idea');
+    else{
+      Channel.findOne({name: data.name}, (err, result) => {
+        let updatedContent = result.idea.map(element => {
+          if(element.id === data.id) return {id: data.id, content: data.newContent};
+          else return element;
+        });
 
+        Channel.update({name:data.name}, {$set: {idea: updatedContent}}, (err) => {
+          if(err) this.io.to(data.name).emit(`Błąd zmiany pomysłu.`);
+          this._emitIdeas(this.io,data.name, result.idea);
+        });
+      });
+    }
   };
   _emitIdeas(io, name, ideas){
     io.to(name).emit("changeIdeas",ideas);
@@ -120,7 +128,7 @@ class TimeController{
       Channel.findOne({name: data}, (err, result) => {
         if(err) console.log(err);
         if(result) {
-          this.io.to(data).emit(`deadline`, (new Date().getTime()+result.time));
+          this.io.to(data).emit(`deadline`, result.deadline);
         }
         else console.log('brak wyniku');//nie znaleziono
       })
@@ -147,7 +155,7 @@ module.exports  = (socket, io) => {
       Channel.findOne({name: data.name}, (err, result) => {
         if(err) console.log(err);
         if(result) {
-          Channel.update({name: data.name}, {$inc : { time: data.time}}, (err)=> {
+          Channel.update({name: data.name}, {$inc : { time: data.time}, $set:{ deadline: new Date().getTime() + result.time + data.time}}, (err)=> {
             io.to(data.name).emit(`Dodano: ${data.time} min`);
           })
         }
