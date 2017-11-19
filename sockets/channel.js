@@ -104,7 +104,9 @@ class TimeController{
         if(err) console.log(err);
         if(result) {
           Channel.update({name: data.name}, {$set: {phase:2}}, (err)=> {
-            this.io.to(data.name).emit(`phasechange`, 2); // popr opis
+            Channel.findOne({name:data}, (err, result)=> {
+              this.io.to(data).emit(`phasechange`, {phase:2, deadline: new Date().getTime() + result.time });
+            });
           })
         }
         else console.log('brak wyniku');//nie znaleziono
@@ -116,9 +118,7 @@ class TimeController{
     if(!data) console.log('errror nie ma nazwy lub czasu')
     else{
       Channel.update({name: data}, {$set: {phase:3}}, (err)=> {
-        Channel.findOne({name:data}, (err, result)=> {
-          this.io.to(data).emit(`phasechange`, {phase:1, deadline: new Date().getTime() + result.time });
-        });
+        this.io.to(data).emit(`phasechange`, 3); // popr opis
       })
     }
   };
