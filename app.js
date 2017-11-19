@@ -82,7 +82,8 @@ class Application{
       require('./sockets/channel')(socket, io);
 
 
-      socket.on('disconnect', function () {
+      socket.on('disconnect', function (data) {
+        console.log(data);
         console.log('A user disconnected');
       });
     });

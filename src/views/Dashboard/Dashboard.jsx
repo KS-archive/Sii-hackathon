@@ -7,7 +7,8 @@ import Idea from './Idea/Idea';
 import NewIdea from './NewIdea/NewIdea';
 import { getCookie } from '../../utils/cookies';
 import { inputStyle } from '../../utils/constants/styles';
-import { initializeBoard } from '../../actions/board';
+import { initializeBoard, phaseChange, changeDeadline } from '../../actions/board';
+import { addIdea } from '../../actions/ideas';
 import { Wrapper, Ideas, Panel, Middle, Header, Time, Button, End, StyledDialog, Input } from './Dashboard_styles';
 
 class Dashboard extends Component {
@@ -15,9 +16,10 @@ class Dashboard extends Component {
     super(props);
     this.boardName = this.props.match.params.boardName;
     this.socket = io(__ROOT_URL__);
+    this.timeInitialized = false;
 
     this.state = {
-      time: '10:38',
+      time: 0,
       open: false,
       personText: '',
     };
@@ -30,12 +32,46 @@ class Dashboard extends Component {
         const cookie = getCookie('admin');
 
         if (cookie) {
-          this.submit(cookie);
+          this.submit(null, cookie);
         } else {
           this.setState({ open: true });
         }
       });
+
+      this.socket.emit('checkTime', this.boardName);
+
+      this.socket.on('phasechange', (data) => {
+        this.props.phaseChange(data);
+      });
+
+      this.socket.on('changeIdeas', (data) => {
+        this.props.addIdea(data);
+      });
+
+      this.socket.on('deadline', (miliseconds) => {
+        this.props.changeDeadline(miliseconds);
+      });
     });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.board.time !== nextProps.board.time) {
+      this.setState({ time: nextProps.board.time });
+    }
+    if (this.props.board.phase === 1 && nextProps.board.phase === 2) {
+      this.interval = setInterval(() => {
+        if (this.state.time === 0) {
+          clearInterval(this.interval);
+        } else {
+          this.socket.emit('checkTime', this.boardName);
+          this.setState({ time: this.state.time - 1000 });
+        }
+      }, 1000);
+    }
+    if (this.props.board.phase === 2 && nextProps.board.phase === 3) {
+      clearInterval(this.interval);
+      this.setState({ time: 0 });
+    }
   }
 
   addMinute = () => {
@@ -43,10 +79,6 @@ class Dashboard extends Component {
       name: this.boardName,
       time: 1000,
     });
-  }
-
-  endSession = () => {
-    this.socket.emit('clear', this.boardName);
   }
 
   handleOpen = () => {
@@ -57,13 +89,49 @@ class Dashboard extends Component {
     this.setState({ open: false });
   };
 
-  submit = (admin = '') => {
-    console.log(this.props.board);
+  submit = (e, admin = '') => {
+    const fullname = admin || this.state.personText;
     this.socket.emit('addParticipant', {
-      fullname: admin || this.state.personText,
+      fullname,
       name: this.boardName,
     });
-    this.handleClose();
+    this.setState({ open: false });
+  }
+
+  startSession = () => {
+    this.socket.emit('startTime', {
+      name: this.boardName,
+      time: this.props.board.time,
+    });
+  }
+
+  endSession = () => {
+    this.socket.emit('goThirdPhase', this.boardName);
+  }
+
+  restartSession = () => {
+    this.socket.emit('clear', this.boardName);
+  }
+
+  phaseButton = () => {
+    switch (this.props.board.phase) {
+      case 1:
+        return <End onClick={this.startSession}>Rozpocznij</End>;
+      case 2:
+        return <End onClick={this.endSession}>Zakończ</End>;
+      case 3:
+        return <End onClick={this.restartSession}>Restart</End>;
+      default:
+        return <End onClick={this.startSession}>Rozpocznij</End>;
+    }
+  }
+
+  parseTime = (miliseconds) => {
+    let minutes = Math.floor((miliseconds / 1000 / 60) % 60);
+    let seconds = Math.floor((miliseconds / 1000) % 60);
+    minutes = ('0' + minutes).slice(-2);
+    seconds = ('0' + seconds).slice(-2);
+    return `${minutes}:${seconds}`;
   }
 
   render() {
@@ -80,18 +148,29 @@ class Dashboard extends Component {
         <Panel>
           <Middle>
             <Header>Czas do końca</Header>
-            <Time>{this.state.time}</Time>
-            <Button
-              primary
-              label="Dołącz"
-              onClick={this.addMinute}
-            />
+            <Time>{this.parseTime(this.state.time)}</Time>
+            {this.props.board.phase === 2 && false &&
+              <Button
+                primary
+                label="Dodaj minutę"
+                onClick={this.addMinute}
+              />
+            }
           </Middle>
-          <End onClick={this.endSession}>Zakończ</End>
+          {this.phaseButton()}
         </Panel>
         <Ideas>
-          <NewIdea socket={this.socket} room={this.boardName} />
-          {this.props.ideas.map(idea => <Idea text={idea} />)}
+          {(this.props.board.phase === 2) &&
+            <NewIdea socket={this.socket} room={this.boardName} />
+          }
+          {(this.props.board.phase !== 1) &&
+            this.props.ideas.map(idea => (
+              <Idea
+                key={idea.id}
+                text={idea.content}
+                phase={this.props.board.phase}
+              />
+            ))}
         </Ideas>
       </Wrapper>,
       <StyledDialog
@@ -122,7 +201,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ initializeBoard }, dispatch);
+  return bindActionCreators({ initializeBoard, phaseChange, addIdea, changeDeadline }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

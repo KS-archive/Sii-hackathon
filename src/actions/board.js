@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { CREATE_BOARD, ADD_IDEA, ADD_PERSON } from './types';
+import { CREATE_BOARD, ADD_IDEA, ADD_PERSON, CHANGE_PHASE, CHANGE_DEADLINE } from './types';
 
 export function createBoard(obj, successCallback, errorCallback) {
   const url = `${__ROOT_URL__}createchannel`;
+  obj = { ...obj, time: Number(obj.time) * 60 * 1000 }
   const request = axios.post(url, obj);
 
   return (dispatch) => {
@@ -38,5 +39,19 @@ export function initializeBoard(roomName, callback) {
       });
       callback();
     });
+  };
+}
+
+export function phaseChange(phase) {
+  return {
+    type: CHANGE_PHASE,
+    payload: phase,
+  };
+}
+
+export function changeDeadline(miliseconds) {
+  return {
+    type: CHANGE_DEADLINE,
+    payload: miliseconds,
   };
 }

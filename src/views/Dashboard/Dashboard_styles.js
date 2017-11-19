@@ -21,10 +21,10 @@ export const Ideas = styled.div`
   overflow-y: auto;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: flex-start;
   width: calc(100% - 330px);
-  height: 100%;
+  max-height: 100%;
 `;
 
 export const Panel = styled.div`

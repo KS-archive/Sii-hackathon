@@ -20,12 +20,11 @@ export default class NewIdea extends Component {
 
   submit = () => {
     const { socket, room } = this.props;
-    console.log(this.state.ideaText);
     socket.emit('addIdea', {
       name: room,
       idea: this.state.ideaText,
     });
-    this.handleClose();
+    this.setState({ open: false, ideaText: '' });
   }
 
   render() {
