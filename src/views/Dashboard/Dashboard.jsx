@@ -56,9 +56,7 @@ class Dashboard extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.board);
     if (this.props.board.time !== nextProps.board.time) {
-      console.log('other time');
       this.setState({
         time: nextProps.board.time - (new Date().getTime() - 1000),
       });
@@ -115,7 +113,22 @@ class Dashboard extends Component {
   }
 
   restartSession = () => {
+    this.timeInitialized = false;
     this.socket.emit('clear', this.boardName);
+    this.props.initializeBoard(this.boardName, () => {
+      this.socket.emit('loadRoom', this.boardName);
+      this.socket.on('connection_response', () => {
+        const cookie = getCookie('admin');
+
+        if (cookie) {
+          this.submit(null, cookie);
+        } else {
+          this.setState({ open: true });
+        }
+      });
+
+      this.socket.emit('checkTime', this.boardName);
+    });
   }
 
   phaseButton = () => {

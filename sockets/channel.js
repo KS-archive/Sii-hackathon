@@ -172,7 +172,7 @@ module.exports  = (socket, io) => {
   socket.on('clear', function (data) {
     if(!data) console.log('blad czyszczenia ekranu')
     else {
-      Channel.update({name: data}, {$set: {idea: [], time: 0, phase:1}}, (err)=>{
+      Channel.update({name: data}, {$set: {idea: [], time: 600000, phase:1}}, (err)=>{
         if(err) io.to(data).emit(`Błąd czyszczenia pomysłów.`);
         io.to(data).emit(`Wyczyszczono pomysły`);
       });
