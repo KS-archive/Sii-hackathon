@@ -55,16 +55,20 @@ class Dashboard extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log(nextProps.board.time);
     if (this.props.board.time !== nextProps.board.time) {
-      this.setState({ time: nextProps.board.time });
+      this.setState({
+        time: nextProps.board.time - (new Date().getTime() - 1000),
+      });
     }
-    if (this.props.board.phase === 1 && nextProps.board.phase === 2) {
+    if (nextProps.board.phase === 2 && !this.timeInitialized) {
+      this.timeInitialized = true;
       this.interval = setInterval(() => {
         if (this.state.time === 0) {
           clearInterval(this.interval);
         } else {
           this.socket.emit('checkTime', this.boardName);
-          this.setState({ time: this.state.time - 1000 });
+          this.setState({ time: (this.props.board.time - (new Date().getTime() - 1000)) });
         }
       }, 1000);
     }
@@ -149,7 +153,7 @@ class Dashboard extends Component {
           <Middle>
             <Header>Czas do końca</Header>
             <Time>{this.parseTime(this.state.time)}</Time>
-            {this.props.board.phase === 2 && false &&
+            {this.props.board.phase === 2 &&
               <Button
                 primary
                 label="Dodaj minutę"

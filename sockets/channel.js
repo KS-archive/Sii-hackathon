@@ -120,7 +120,7 @@ class TimeController{
       Channel.findOne({name: data}, (err, result) => {
         if(err) console.log(err);
         if(result) {
-          this.io.to(data.name).emit(`deadline`, (new Date().getTime()+result.time));
+          this.io.to(data).emit(`deadline`, (new Date().getTime()+result.time));
         }
         else console.log('brak wyniku');//nie znaleziono
       })
