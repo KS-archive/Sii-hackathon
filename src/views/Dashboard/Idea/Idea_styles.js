@@ -8,13 +8,15 @@ export const IdeaWrapper = styled.div`
   left: -30px;
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 280px;
   height: 225px;
   margin: 30px 0 0 30px;
   border-bottom: 8px solid ${colorPalette.primary1Color};
   padding: 15px;
   border-radius: 4px;
-  font-size: 19px;
+  font-size: 22px;
+  text-align: center;
   line-height: 1.4;
   background-color: #fff;
   box-shadow: rgba(0, 0, 0, 0.16) 0 3px 10px, rgba(0, 0, 0, 0.23) 0 3px 10px;

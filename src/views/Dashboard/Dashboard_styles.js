@@ -87,6 +87,12 @@ export const End = styled.div`
   text-transform: uppercase;
   color: #fff;
   text-align: center;
+  transition: all 0.3s;
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${colorPalette.primary2Color};
+  }
 `;
 
 export const StyledDialog = styled(Dialog)`
