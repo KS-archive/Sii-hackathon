@@ -6,7 +6,7 @@ export default class Idea extends Component {
   render() {
     return (
       <IdeaWrapper>
-        {this.props.phase === 2
+        {(this.props.phase === 2)
           ? <IconWrapper><LightBulb /></IconWrapper>
           : this.props.text
         }

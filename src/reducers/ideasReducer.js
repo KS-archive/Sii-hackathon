@@ -3,7 +3,6 @@ import { ADD_IDEA, EDIT_IDEA, REMOVE_IDEA } from '../actions/types';
 export default function (state = [], action) {
   switch (action.type) {
     case ADD_IDEA:
-      console.log(action.payload);
       return action.payload;
 
     case EDIT_IDEA:

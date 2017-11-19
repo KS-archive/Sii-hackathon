@@ -54,52 +54,24 @@ class Dashboard extends Component {
     });
   }
 
-  // componentWillUpdate(nextProps) {
-  //   if (nextProps.board.time !== this.state.time && !this.timeInitialized) {
-  //     this.timeInitialized = true;
-  //     this.setState({ time: nextProps.board.time }, () => {
-  //       this.initializeClock(nextProps.board.time);
-  //     });
-  //   }
-  // }
-
   componentWillReceiveProps(nextProps) {
-    if (nextProps.board.time !== this.props.board.time) {
-      this.setState({
-        time: nextProps.board.time + new Date().getTime(),
-      }, () => {
-        this.initializeClock();
-        if (this.timeinterval) {
-          console.log('obj');
-          clearInterval(this.timeinterval);
-          this.initializeClock();
+    if (this.props.board.time !== nextProps.board.time) {
+      this.setState({ time: nextProps.board.time });
+    }
+    if (this.props.board.phase === 1 && nextProps.board.phase === 2) {
+      this.interval = setInterval(() => {
+        if (this.state.time === 0) {
+          clearInterval(this.interval);
+        } else {
+          this.socket.emit('checkTime', this.boardName);
+          this.setState({ time: this.state.time - 1000 });
         }
-      });
+      }, 1000);
     }
-  }
-
-  initializeClock = () => {
-    const timeToEnd = new Date(Date.parse(new Date()) + this.state.time);
-    const updateClock = () => {
-      const t = this.getTimeRemaining(timeToEnd);
-      console.log(t);
-      const minutes = ('0' + t.minutes).slice(-2);
-      const seconds = ('0' + t.seconds).slice(-2);
-      this.setState({ timeString: `${minutes}:${seconds}` });
-
-      if (t.total <= 0) {
-        clearInterval(this.timeinterval);
-      }
+    if (this.props.board.phase === 2 && nextProps.board.phase === 3) {
+      clearInterval(this.interval);
+      this.setState({ time: 0 });
     }
-    updateClock();
-    this.timeinterval = setInterval(updateClock, 1000);
-  }
-
-  getTimeRemaining = (endtime) => {
-    const total = Date.parse(endtime) - Date.parse(new Date());
-    const seconds = Math.floor((total / 1000) % 60);
-    const minutes = Math.floor((total / 1000 / 60) % 60);
-    return { total, minutes, seconds };
   }
 
   addMinute = () => {
@@ -119,7 +91,6 @@ class Dashboard extends Component {
 
   submit = (e, admin = '') => {
     const fullname = admin || this.state.personText;
-    console.log(fullname);
     this.socket.emit('addParticipant', {
       fullname,
       name: this.boardName,
@@ -155,6 +126,14 @@ class Dashboard extends Component {
     }
   }
 
+  parseTime = (miliseconds) => {
+    let minutes = Math.floor((miliseconds / 1000 / 60) % 60);
+    let seconds = Math.floor((miliseconds / 1000) % 60);
+    minutes = ('0' + minutes).slice(-2);
+    seconds = ('0' + seconds).slice(-2);
+    return `${minutes}:${seconds}`;
+  }
+
   render() {
     const actions = [
       <FlatButton
@@ -164,15 +143,13 @@ class Dashboard extends Component {
       />,
     ];
 
-    console.log(this.state.timeString);
-
     return [
       <Wrapper key="Wrapper">
         <Panel>
           <Middle>
             <Header>Czas do końca</Header>
-            <Time>{this.state.timeString}</Time>
-            {this.props.board.phase === 2 &&
+            <Time>{this.parseTime(this.state.time)}</Time>
+            {this.props.board.phase === 2 && false &&
               <Button
                 primary
                 label="Dodaj minutę"
@@ -191,7 +168,7 @@ class Dashboard extends Component {
               <Idea
                 key={idea.id}
                 text={idea.content}
-                phase={this.props.phase}
+                phase={this.props.board.phase}
               />
             ))}
         </Ideas>

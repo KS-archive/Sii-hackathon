@@ -28,4 +28,13 @@ export const IconWrapper = styled.div`
   justify-content: center;
   width: 100%;
   height: 100%;
+
+  svg {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  path {
+    fill: ${colorPalette.primary1Color};
+  }
 `;
