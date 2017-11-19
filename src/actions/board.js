@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CREATE_BOARD, ADD_IDEA, ADD_PERSON, CHANGE_PHASE } from './types';
+import { CREATE_BOARD, ADD_IDEA, ADD_PERSON, CHANGE_PHASE, CHANGE_DEADLINE } from './types';
 
 export function createBoard(obj, successCallback, errorCallback) {
   const url = `${__ROOT_URL__}createchannel`;
@@ -46,5 +46,12 @@ export function phaseChange(phase) {
   return {
     type: CHANGE_PHASE,
     payload: phase,
+  };
+}
+
+export function changeDeadline(miliseconds) {
+  return {
+    type: CHANGE_DEADLINE,
+    payload: miliseconds,
   };
 }

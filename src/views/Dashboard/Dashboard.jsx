@@ -7,7 +7,7 @@ import Idea from './Idea/Idea';
 import NewIdea from './NewIdea/NewIdea';
 import { getCookie } from '../../utils/cookies';
 import { inputStyle } from '../../utils/constants/styles';
-import { initializeBoard, phaseChange } from '../../actions/board';
+import { initializeBoard, phaseChange, changeDeadline } from '../../actions/board';
 import { addIdea } from '../../actions/ideas';
 import { Wrapper, Ideas, Panel, Middle, Header, Time, Button, End, StyledDialog, Input } from './Dashboard_styles';
 
@@ -22,7 +22,6 @@ class Dashboard extends Component {
       time: 0,
       open: false,
       personText: '',
-      activeUser: '',
     };
   }
 
@@ -39,30 +38,51 @@ class Dashboard extends Component {
         }
       });
 
+      this.socket.emit('checkTime', this.boardName);
+
       this.socket.on('phasechange', (data) => {
         this.props.phaseChange(data);
       });
 
       this.socket.on('changeIdeas', (data) => {
-        console.log(data);
         this.props.addIdea(data);
+      });
+
+      this.socket.on('deadline', (miliseconds) => {
+        this.props.changeDeadline(miliseconds);
       });
     });
   }
 
-  componentWillUpdate(nextProps) {
-    if (nextProps.board.time !== this.state.time && !this.timeInitialized) {
-      this.timeInitialized = true;
-      this.setState({ time: nextProps.board.time }, () => {
-        this.initializeClock(nextProps.board.time);
+  // componentWillUpdate(nextProps) {
+  //   if (nextProps.board.time !== this.state.time && !this.timeInitialized) {
+  //     this.timeInitialized = true;
+  //     this.setState({ time: nextProps.board.time }, () => {
+  //       this.initializeClock(nextProps.board.time);
+  //     });
+  //   }
+  // }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.board.time !== this.props.board.time) {
+      this.setState({
+        time: nextProps.board.time + new Date().getTime(),
+      }, () => {
+        this.initializeClock();
+        if (this.timeinterval) {
+          console.log('obj');
+          clearInterval(this.timeinterval);
+          this.initializeClock();
+        }
       });
     }
   }
 
-  initializeClock = (endtime) => {
-    const timeToEnd = new Date(Date.parse(new Date()) + endtime);
+  initializeClock = () => {
+    const timeToEnd = new Date(Date.parse(new Date()) + this.state.time);
     const updateClock = () => {
       const t = this.getTimeRemaining(timeToEnd);
+      console.log(t);
       const minutes = ('0' + t.minutes).slice(-2);
       const seconds = ('0' + t.seconds).slice(-2);
       this.setState({ timeString: `${minutes}:${seconds}` });
@@ -104,7 +124,7 @@ class Dashboard extends Component {
       fullname,
       name: this.boardName,
     });
-    this.setState({ activeUser: fullname, open: false });
+    this.setState({ open: false });
   }
 
   startSession = () => {
@@ -144,6 +164,8 @@ class Dashboard extends Component {
       />,
     ];
 
+    console.log(this.state.timeString);
+
     return [
       <Wrapper key="Wrapper">
         <Panel>
@@ -161,8 +183,17 @@ class Dashboard extends Component {
           {this.phaseButton()}
         </Panel>
         <Ideas>
-          <NewIdea socket={this.socket} room={this.boardName} />
-          {this.props.ideas.map(idea => <Idea key={idea.id} text={idea.content} />)}
+          {(this.props.board.phase === 2) &&
+            <NewIdea socket={this.socket} room={this.boardName} />
+          }
+          {(this.props.board.phase !== 1) &&
+            this.props.ideas.map(idea => (
+              <Idea
+                key={idea.id}
+                text={idea.content}
+                phase={this.props.phase}
+              />
+            ))}
         </Ideas>
       </Wrapper>,
       <StyledDialog
@@ -193,7 +224,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ initializeBoard, phaseChange, addIdea }, dispatch);
+  return bindActionCreators({ initializeBoard, phaseChange, addIdea, changeDeadline }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
