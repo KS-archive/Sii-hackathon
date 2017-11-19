@@ -117,7 +117,9 @@ class TimeController{
     if(!data) console.log('errror nie ma nazwy lub czasu')
     else{
       Channel.update({name: data}, {$set: {phase:3}}, (err)=> {
-        this.io.to(data).emit(`phasechange`, 3); // popr opis
+        Channel.findOne({name:data}, (err, result)=> {
+          this.io.to(data).emit(`phasechange`, {phase:1, deadline: new Date().getTime() + result.time });
+        });
       })
     }
   };
