@@ -93,6 +93,7 @@ class TimeController{
   constructor(socket, io){
     this.io = io;
     socket.on('startTime', this.startTime.bind(this));
+    socket.on('checkTime', this.checkTime.bind(this));
     socket.on('goThirdPhase', this.changeToThirdPhase.bind(this));
   };
 
@@ -104,10 +105,22 @@ class TimeController{
         if(err) console.log(err);
         if(result) {
           Channel.update({name: data.name}, {$set: {phase:2}}, (err)=> {
-            Channel.findOne({name:data}, (err, result)=> {
-              this.io.to(data).emit(`phasechange`, {phase:2, deadline: new Date().getTime() + result.time });
-            });
+            this.io.to(data.name).emit(`phasechange`, 2); // popr opis
           })
+        }
+        else console.log('brak wyniku');//nie znaleziono
+      })
+    }
+  };
+
+  checkTime(data){
+
+    if(!data) console.log('errror nie ma nazwy lub czasu')
+    else{
+      Channel.findOne({name: data}, (err, result) => {
+        if(err) console.log(err);
+        if(result) {
+          this.io.to(data.name).emit(`deadline`, (new Date().getTime()+result.time));
         }
         else console.log('brak wyniku');//nie znaleziono
       })
@@ -118,7 +131,7 @@ class TimeController{
     if(!data) console.log('errror nie ma nazwy lub czasu')
     else{
       Channel.update({name: data}, {$set: {phase:3}}, (err)=> {
-        this.io.to(data).emit(`phasechange`, {phase: 3}); 
+        this.io.to(data).emit(`phasechange`, 3); // popr opis
       })
     }
   };
