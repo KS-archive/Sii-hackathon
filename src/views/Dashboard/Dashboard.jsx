@@ -49,14 +49,16 @@ class Dashboard extends Component {
       });
 
       this.socket.on('deadline', (miliseconds) => {
+        console.log(new Date(miliseconds));
         this.props.changeDeadline(miliseconds);
       });
     });
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.board.time);
+    console.log(nextProps.board);
     if (this.props.board.time !== nextProps.board.time) {
+      console.log('other time');
       this.setState({
         time: nextProps.board.time - (new Date().getTime() - 1000),
       });
@@ -67,7 +69,6 @@ class Dashboard extends Component {
         if (this.state.time === 0) {
           clearInterval(this.interval);
         } else {
-          this.socket.emit('checkTime', this.boardName);
           this.setState({ time: (this.props.board.time - (new Date().getTime() - 1000)) });
         }
       }, 1000);
@@ -81,7 +82,7 @@ class Dashboard extends Component {
   addMinute = () => {
     this.socket.emit('setTime', {
       name: this.boardName,
-      time: 1000,
+      time: this.state.time,
     });
   }
 

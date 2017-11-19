@@ -158,9 +158,9 @@ module.exports  = (socket, io) => {
       Channel.findOne({name: data.name}, (err, result) => {
         if(err) console.log(err);
         if(result) {
-          Channel.update({name: data.name}, {$inc : { time: data.time}, $set:{ deadline: new Date().getTime() + result.time + data.time}}, (err)=> {
+          Channel.update({name: data.name}, {$inc : { time: 60000}, $set:{ deadline: new Date().getTime() + data.time + 60000}}, (err)=> {
             Channel.findOne({name: data.name}, (err, result) => {
-              this.io.to(data.name).emit(`deadline`, result.deadline);
+              io.to(data.name).emit(`deadline`, result.deadline);
             });
           })
         }
