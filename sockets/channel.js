@@ -159,7 +159,9 @@ module.exports  = (socket, io) => {
         if(err) console.log(err);
         if(result) {
           Channel.update({name: data.name}, {$inc : { time: data.time}, $set:{ deadline: new Date().getTime() + result.time + data.time}}, (err)=> {
-            io.to(data.name).emit(`Dodano: ${data.time} min`);
+            Channel.findOne({name: data.name}, (err, result) => {
+              this.io.to(data.name).emit(`deadline`, result.deadline);
+            });
           })
         }
         else console.log('brak wyniku');//nie znaleziono
