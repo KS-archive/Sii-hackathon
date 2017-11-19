@@ -9,7 +9,6 @@ export const Wrapper = Container.extend`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  height: 100%;
   padding: 30px 0;
   ${media.xxl`
     padding: 30px 45px;
@@ -17,24 +16,35 @@ export const Wrapper = Container.extend`
 `;
 
 export const Ideas = styled.div`
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-start;
-  width: calc(100% - 330px);
+  width: 100%;
+  padding-left: 35px;
   max-height: 100%;
+  ${media.sm`
+    padding-left: 0px;
+    width: 100vw;
+    justify-content: center;
+    align-items:center;
+  `}
 `;
 
 export const Panel = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 300px;
+  width: 380px;
   background-color: #fff;
   box-shadow: rgba(0, 0, 0, 0.16) 0 3px 10px, rgba(0, 0, 0, 0.23) 0 3px 10px;
+  ${media.sm`
+    display: none;
+  `}
+  ${media.md`
+    width: 700px;
+  `}
+  ${media.md`
+    width: 600px;
+  `}
 `;
 
 export const Middle = styled.div`
@@ -42,6 +52,9 @@ export const Middle = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 60px 0;
+  ${media.xs`
+    display: none;
+  `}
 `;
 
 export const Header = styled.div`
