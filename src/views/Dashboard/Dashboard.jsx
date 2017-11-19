@@ -7,7 +7,8 @@ import Idea from './Idea/Idea';
 import NewIdea from './NewIdea/NewIdea';
 import { getCookie } from '../../utils/cookies';
 import { inputStyle } from '../../utils/constants/styles';
-import { initializeBoard } from '../../actions/board';
+import { initializeBoard, phaseChange } from '../../actions/board';
+import { addIdea } from '../../actions/ideas';
 import { Wrapper, Ideas, Panel, Middle, Header, Time, Button, End, StyledDialog, Input } from './Dashboard_styles';
 
 class Dashboard extends Component {
@@ -15,9 +16,10 @@ class Dashboard extends Component {
     super(props);
     this.boardName = this.props.match.params.boardName;
     this.socket = io(__ROOT_URL__);
+    this.timeInitialized = false;
 
     this.state = {
-      time: '10:38',
+      time: 0,
       open: false,
       personText: '',
       activeUser: '',
@@ -36,7 +38,48 @@ class Dashboard extends Component {
           this.setState({ open: true });
         }
       });
+
+      this.socket.on('phasechange', (data) => {
+        this.props.phaseChange(data);
+      });
+
+      this.socket.on('changeIdeas', (data) => {
+        console.log(data);
+        this.props.addIdea(data);
+      });
     });
+  }
+
+  componentWillUpdate(nextProps) {
+    if (nextProps.board.time !== this.state.time && !this.timeInitialized) {
+      this.timeInitialized = true;
+      this.setState({ time: nextProps.board.time }, () => {
+        this.initializeClock(nextProps.board.time);
+      });
+    }
+  }
+
+  initializeClock = (endtime) => {
+    const timeToEnd = new Date(Date.parse(new Date()) + endtime);
+    const updateClock = () => {
+      const t = this.getTimeRemaining(timeToEnd);
+      const minutes = ('0' + t.minutes).slice(-2);
+      const seconds = ('0' + t.seconds).slice(-2);
+      this.setState({ timeString: `${minutes}:${seconds}` });
+
+      if (t.total <= 0) {
+        clearInterval(this.timeinterval);
+      }
+    }
+    updateClock();
+    this.timeinterval = setInterval(updateClock, 1000);
+  }
+
+  getTimeRemaining = (endtime) => {
+    const total = Date.parse(endtime) - Date.parse(new Date());
+    const seconds = Math.floor((total / 1000) % 60);
+    const minutes = Math.floor((total / 1000 / 60) % 60);
+    return { total, minutes, seconds };
   }
 
   addMinute = () => {
@@ -72,7 +115,7 @@ class Dashboard extends Component {
   }
 
   endSession = () => {
-    console.log('Zakończono sesję kreatywną');
+    this.socket.emit('goThirdPhase', this.boardName);
   }
 
   restartSession = () => {
@@ -106,18 +149,20 @@ class Dashboard extends Component {
         <Panel>
           <Middle>
             <Header>Czas do końca</Header>
-            <Time>{this.state.time}</Time>
-            <Button
-              primary
-              label="Dołącz"
-              onClick={this.addMinute}
-            />
+            <Time>{this.state.timeString}</Time>
+            {this.props.board.phase === 2 &&
+              <Button
+                primary
+                label="Dodaj minutę"
+                onClick={this.addMinute}
+              />
+            }
           </Middle>
           {this.phaseButton()}
         </Panel>
         <Ideas>
           <NewIdea socket={this.socket} room={this.boardName} />
-          {this.props.ideas.map(idea => <Idea text={idea} />)}
+          {this.props.ideas.map(idea => <Idea key={idea.id} text={idea.content} />)}
         </Ideas>
       </Wrapper>,
       <StyledDialog
@@ -148,7 +193,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ initializeBoard }, dispatch);
+  return bindActionCreators({ initializeBoard, phaseChange, addIdea }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
