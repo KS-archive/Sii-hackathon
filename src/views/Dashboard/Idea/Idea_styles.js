@@ -14,7 +14,7 @@ export const IdeaWrapper = styled.div`
   border-bottom: 8px solid ${colorPalette.primary1Color};
   padding: 15px;
   border-radius: 4px;
-  font-size: 17px;
+  font-size: 19px;
   line-height: 1.4;
   background-color: #fff;
   box-shadow: rgba(0, 0, 0, 0.16) 0 3px 10px, rgba(0, 0, 0, 0.23) 0 3px 10px;
