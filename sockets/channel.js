@@ -94,6 +94,7 @@ class TimeController{
   constructor(socket, io){
     this.io = io;
     socket.on('startTime', this.startTime.bind(this));
+    socket.on('checkTime', this.checkTime.bind(this));
     socket.on('goThirdPhase', this.changeToThirdPhase.bind(this));
   };
 
@@ -113,13 +114,25 @@ class TimeController{
     }
   };
 
+  checkTime(data){
+
+    if(!data) console.log('errror nie ma nazwy lub czasu')
+    else{
+      Channel.findOne({name: data}, (err, result) => {
+        if(err) console.log(err);
+        if(result) {
+          this.io.to(data.name).emit(`deadline`, (new Date().getTime()+result.time));
+        }
+        else console.log('brak wyniku');//nie znaleziono
+      })
+    }
+  };
+
   changeToThirdPhase(data){
     if(!data) console.log('errror nie ma nazwy lub czasu')
     else{
       Channel.update({name: data}, {$set: {phase:3}}, (err)=> {
-        Channel.findOne({name:data}, (err, result)=> {
-          this.io.to(data).emit(`phasechange`, {phase:1, deadline: new Date().getTime() + result.time });
-        });
+        this.io.to(data).emit(`phasechange`, 3); // popr opis
       })
     }
   };
